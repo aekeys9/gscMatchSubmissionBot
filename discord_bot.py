@@ -4,7 +4,7 @@ from discord.ext import commands
 import MKTBAPI as api
 
 bot = commands.Bot(command_prefix="!", intents=ds.Intents.all())
-token = "MTA2MjU0NzE1MTU1ODgxMTY2OQ.GMQ9ya.N0nyAiPvZv_n-Jc5f2oxTiZe3IiuMrgboqMejw"
+token = "Hidden for your and my safety."
 
 @bot.event
 async def on_ready():
