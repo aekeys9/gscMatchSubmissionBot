@@ -1,3 +1,10 @@
+"""
+GSC Match Submission Bot - Mario Kart Table Bot API program
+This program takes in a Table Bot ID and transcribes it into storable data for all other programs
+Made By: Joey , Alex Keys
+"""
+
+#IMPORTS
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -14,6 +21,7 @@ from discord import app_commands
 from discord.ext import commands
 from urllib.request import urlopen
 
+#DEFINITION OF MARIO KART WII TRACKS
 TRACKS = {"Wii Luigi Circuit": 'LC',
             "Wii Moo Moo Meadows": 'MMM',
             "Wii Mushroom Gorge": 'MG',
@@ -46,7 +54,7 @@ TRACKS = {"Wii Luigi Circuit": 'LC',
             "DS Peach Gardens": 'rPG',
             "GCN DK Mountain": 'DKM',
             "N64 Bowser's Castle": 'rBC'}
-
+#FUNCTION Read: 
 def read(file):
 
     num = 0
@@ -130,7 +138,7 @@ def read(file):
 
         return matches
 
-
+#FUNCTION Summarize:
 def summarize(matches):
 
     player_alls = []
@@ -213,7 +221,7 @@ def summarize(matches):
 
 
 
-
+#FUNCTION Main: Takes table ID's JSON data in, outputs data into a text file for storage
 def main(tableID, div):
     #tableID = "1065074404519841873" #Will change into a discord message pull/command pull
     tableBotLink = "http://mkw-table-bot-api.loca.lt/api/json/team_scores/{}?full_details=true".format(tableID)
