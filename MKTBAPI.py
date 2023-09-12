@@ -1,7 +1,7 @@
 """
 GSC Match Submission Bot - Mario Kart Table Bot API program
 This program takes in a Table Bot ID and transcribes it into storable data for all other programs
-Made By: Joey , Alex Keys
+Made By: Joey Scolponeti, Alex Keys
 """
 
 #IMPORTS
@@ -54,18 +54,26 @@ TRACKS = {"Wii Luigi Circuit": 'LC',
             "DS Peach Gardens": 'rPG',
             "GCN DK Mountain": 'DKM',
             "N64 Bowser's Castle": 'rBC'}
-#FUNCTION Read: 
-def read(file):
 
+def read(file):
+""" Reads a MKW Table Bot JSON string and converts it to player objects
+
+Args:
+    file (str): text file containing JSON strings
+
+Returns:
+	matches (list): List of match objects
+"""
+
+	# setting variables and list to store matches
     num = 0
     matches = []
-
+	
     with open(file, 'r', encoding='utf-8') as infile:
 
+		# stops when out of matches
         while True:
-
             string = infile.readline()
-
             if string == '':
                 break
 
@@ -73,74 +81,98 @@ def read(file):
 
                 num += 1
 
+				# load string as JSON
                 dct = json.loads(string)
 
+				# collects tracks played, abbreviates them
                 tracks = dct['tracks']
-
                 for i in range(len(tracks)):
                     tracks[i] = TRACKS[tracks[i]]
 
+				# initializes lists for teams
                 teams = dct['teams']
                 both = []
 
                 for key in teams:
 
+					# creates a dataframe from team dictionary
                     df = pd.DataFrame.from_dict(teams[key])
                     players = []
 
                     for entry in df['players'].values:
 
+						# collects data about each player into Player Object
                         player = PlayerAPI(entry['lounge_name'],
-                                           sum(entry['gp_scores'][0]),
-                                           sum(entry['gp_scores'][1]),
-                                           sum(entry['gp_scores'][2]),
-                                           entry['total_score'],
-                                           entry['mii_name'],
-                                           entry['race_scores'],
-                                           entry['race_positions'],
-                                           entry['flag'],
-                                           team=key, num=num, sum=True)
+                                           sum(entry['gp_scores'][0]), # GP1 score
+                                           sum(entry['gp_scores'][1]), # GP2 score
+                                           sum(entry['gp_scores'][2]), # GP3 score
+                                           entry['total_score'],       # Total score
+                                           entry['mii_name'],          # Mii Name
+                                           entry['race_scores'],       # All scores in one list
+                                           entry['race_positions'],    # All position in one list
+                                           entry['flag'],              # Player flag
+                                           team=key,                   # Team Name
+										   num=num,                    # ID
+										   sum=True)                   # dw about this   
 
                         players.append(player)
 
+					# adds total GP scores from team
                     gp1 = 0
                     gp2 = 0
                     gp3 = 0
-
+					
                     for p in players:
                         gp1 += int(p.gp1)
                         gp2 += int(p.gp2)
                         gp3 += int(p.gp3)
 
-                    team = Team(key, gp1, gp2, gp3,
-                                teams[key]['table_penalty_str'],
-                                int(teams[key]['total_score']),
-                                players, num)
+					# collects data about each team into Team Object 
+                    team = Team(key,                             # Name
+								gp1, gp2, gp3,                   # GP Scores
+                                teams[key]['table_penalty_str'], # Team Penalty
+                                int(teams[key]['total_score']),  # Team Score
+                                players,                         # List of Players (Objects)
+								num)                             # ID
 
+					# adds both Team objects into list
                     both.append(team)
 
+				# Tunes Points (Figured out later in MKOBJECT I think idk)
                 t1t = 'later'
                 t2t = 'bruh'
 
-                match = MatchAPI(f'Match #{num}',
-                                 both[0],
-                                 both[1],
-                                 t1t,
-                                 t2t,
-                                 both[0].score,
-                                 both[1].score,
-                                 both[0].players + both[1].players,
-                                 both[0].score - both[1].score,
-                                 num,
-                                 tracks)
+				# creates an object about the whole match
+                match = MatchAPI(f'Match #{num}',                     # Match Name
+                                 both[0],                             # Team 1 Object
+                                 both[1],                             # Team 2 Object
+                                 t1t,                                 # Team 1 Tunes Points                     
+                                 t2t,                                 # Team 2 Tunes Points
+                                 both[0].score,                       # Team 1 Score
+                                 both[1].score,                       # Team 2 Score
+                                 both[0].players + both[1].players,   # All Player Objects
+                                 both[0].score - both[1].score,       # Score Dif
+                                 num,                                 # ID
+                                 tracks)                              # Tracks Played
 
+				# Add matches to match list
                 matches.append(match)
 
         return matches
 
-#FUNCTION Summarize:
 def summarize(matches):
+	""" Summarizes all of the Player and Team objects
 
+ 	Args:
+  		matches (list): List of match objects
+
+ 	Returns:
+  		player_alls (list): List of all player_all objects
+		team_alls (list): List of all team_all objects
+  		p_ids (dict): Dictionary of all Player IDs
+		t_ids (dict): Dictionary of all Team IDs
+	"""
+	
     player_alls = []
     player_names = []
     p_ids = {}
@@ -216,8 +248,6 @@ def summarize(matches):
     # t_ids.pop('')
 
     return player_alls, team_alls, p_ids, t_ids
-
-#PULLING DATA FROM API AND SAVING IT
 
 
 
