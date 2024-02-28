@@ -33,5 +33,11 @@ async def submit(interaction: ds.Interaction, table_id: str, division: str):
     api.main(table_id, division) #function ran
     await interaction.followup.send(content=f"Submitted **Divison {division}** match with ID **{table_id}** to the Analytics Team!",)
 
+#'Manual' COMMAND: if a player is unable to submit a table, they can run this command to notify the analytics team
+@bot.tree.command(name="manual")
+async def manual(interaction: ds.Interaction):
+    await interaction.response.send_message("<@&1033525989977890890> This event has to be manually put into the database.")
+
+
 #TURNING ON THE BOT
 bot.run(token)
